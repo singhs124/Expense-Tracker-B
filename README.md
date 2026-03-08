@@ -10,7 +10,7 @@
 The Expense Tracker application helps users easily log their daily expenses, view spending habits through beautiful charts, and maintain their financial health. This repository contains both the **Backend API** and the **Mobile Frontend**.
 
 - **Backend:** Java 17 & Spring Boot (Located in the root directory)
-- **Frontend:** React Native Mobile App (Located in the `react-native` directory)
+- **Frontend:** React Native Mobile App (Located in the `frontend` directory)
 
 ---
 

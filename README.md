@@ -73,7 +73,7 @@ The server will start on `http://localhost:8080` (or whichever port is specified
 
 ## 📱 Frontend Instructions
 
-The mobile application codebase is located in the `react-native` folder. Please refer to the [Frontend README.md](./react-native/README.md) for detailed instructions on how to set up and run the mobile app on Android or iOS simulators.
+The mobile application codebase is located in the `react-native` folder. Please refer to the [Frontend README.md](./frontend/README.md) for detailed instructions on how to set up and run the mobile app on Android or iOS simulators.
 
 ---
 

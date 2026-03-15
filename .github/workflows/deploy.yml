@@ -31,7 +31,7 @@ jobs:
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ubuntu
-          key: ${{ secrets.SERVER_IP }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
           source: "expenses.jar"
           target: "/opt/expenses-app/"
 
@@ -40,6 +40,6 @@ jobs:
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ubuntu
-          key: ${{ secrets.SERVER_IP }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
           script: | 
             sudo systemctl restart expenses.service

@@ -36,7 +36,7 @@ jobs:
           target: "/opt/expenses-app/"
 
       - name: 6. Restart the Application
-        uses: appleboy/scp-action@v1.0.3
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ubuntu

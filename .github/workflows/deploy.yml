@@ -1,0 +1,45 @@
+name: Build and Deploy to OCI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 2. Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: 3. Build JAR file
+        run: mvn clean package -DskipTests
+
+      - name: 4. Prepare JAR for tranfer
+        run: mv target/expenses-*.jar expenses.jar
+
+      - name: 5. Copy JAR to Oracle Server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ubuntu
+          key: ${{ secrets.SERVER_IP }}
+          source: "expenses.jar"
+          target: "/opt/expenses-app/"
+
+      - name: 6. Restart the Application
+        uses: appleboy/scp-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ubuntu
+          key: ${{ secrets.SERVER_IP }}
+          script: | 
+            sudo systemctl restart expenses.service

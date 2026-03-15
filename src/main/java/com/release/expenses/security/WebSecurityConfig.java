@@ -20,7 +20,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .authorizeHttpRequests(auth->auth
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**", "/api/v1/health/**").permitAll()
                         .requestMatchers("/api/v1/expense/**").authenticated()
                         .requestMatchers("/api/v1/bank/**").authenticated()
                 )

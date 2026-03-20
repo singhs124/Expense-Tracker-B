@@ -2,20 +2,31 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import BankScreen from '../screens/BankScreen';
 import ComingSoonPage from '../screens/ComingSoonPage';
-import ProfileScreen from '../screens/ProfileScreen';
+import AccountScreen from '../screens/ProfileAccountScreen';
 
-const ProfileStack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator();
 
-export const SettingScreenStack = ()=> {
+const SCREENS = [
+  { name: 'Menus', component: AccountScreen },
+  { name: 'Theme', component: ComingSoonPage },
+  { name: 'Bank', component: BankScreen },
+  { name: 'Preferences', component: ComingSoonPage },
+];
+
+export const AccountStack = () => {
   return (
-    <ProfileStack.Navigator screenOptions={({route})=>{
-      return {
-      headerShown: route.name !== 'Menus'
-    }}}>
-      <ProfileStack.Screen name="Menus" component={ProfileScreen} />
-      <ProfileStack.Screen name="Theme" component={ComingSoonPage} />
-      <ProfileStack.Screen name="Bank" component={BankScreen} />
-      <ProfileStack.Screen name="Preferences" component={ComingSoonPage} />
-    </ProfileStack.Navigator>
-  )
-}
+    <Stack.Navigator 
+      screenOptions={({ route }) => ({
+        headerShown: route.name !== 'Menus'
+      })}
+    >
+      {SCREENS.map((screen) => (
+        <Stack.Screen
+          key={screen.name}
+          name={screen.name}
+          component={screen.component}
+        />
+      ))}
+    </Stack.Navigator>
+  );
+};

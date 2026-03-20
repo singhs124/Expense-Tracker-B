@@ -80,3 +80,4 @@ android/build/
 android/.gradle/
 ios/Pods/
 .vscode/
+/docs/

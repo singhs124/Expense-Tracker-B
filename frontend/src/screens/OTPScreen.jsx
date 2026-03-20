@@ -3,10 +3,10 @@ import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Alert, Vibration } from 'react-native';
-import { emailLoginRequest, validateOtp } from '../backend/login';
 import OTPInput2 from '../components/OtpInput2';
 import { useOtp } from '../contexts/OTPContext';
-import { log } from '../logger/logging';
+import { emailLoginRequest, validateOtp } from '../services/api/login';
+import { log } from '../utils/logging';
 
 
 const OTPScreen = ({ phoneNumber, onVerificationSuccess, onCancel }) => {
@@ -56,20 +56,15 @@ const OTPScreen = ({ phoneNumber, onVerificationSuccess, onCancel }) => {
                 mobileNumber: phoneNumber,
                 reqObject: otpCode
             }
-            const res = await validateOtp(payload);
-            const data = await res.json();
-            if (res.ok) {
-                setIsVerified(true);
-                setShowSuccess(true);
-                onVerificationSuccess(data);
-            } else{
-                const errorMessage = data.message || 'Invalid OTP. Try Again!';
-                setError(errorMessage);
-                Vibration.vibrate(400);
-            }
+            const data = await validateOtp(payload);
+            setIsVerified(true);
+            setShowSuccess(true);
+            onVerificationSuccess(data);
         } catch (error) {
+            const errorMessage = error.response?.data?.message || 'Invalid OTP. Try Again!';
             log.error("OTP Verification Error: ", error);
-            setError("Network Error. Please Check your connection!");
+            setError(errorMessage);
+            Vibration.vibrate(400);
         } finally {
             setIsLoading(false);
         }
@@ -77,20 +72,15 @@ const OTPScreen = ({ phoneNumber, onVerificationSuccess, onCancel }) => {
 
     const handleResendOTP = async () => {
         if (!canResend) return;
-
         setIsLoading(true);
-
         try {
             const payload = {
                 mobileNumber: phoneNumber,
                 reqObj:''
             }
-            const response = await emailLoginRequest(payload);
+            const data = await emailLoginRequest(payload);
 
-            const data = await response.json();
-
-            if (response.ok && data.success) {
-                // Reset timer and clear error
+            if (data.success) {
                 resetTimer();
                 Alert.alert('Success', 'OTP sent to your phone number');
             } else {
@@ -98,7 +88,11 @@ const OTPScreen = ({ phoneNumber, onVerificationSuccess, onCancel }) => {
             }
         } catch (err) {
             log.error('Resend OTP Error:', err);
-            setError('Network error. Please check your connection.');
+            if (error.code === 'ECONNABORTED') {
+                setError('Request timed out. Try again.');
+            } else {
+                setError(error.response?.data?.message || 'Failed to resend OTP. Try again.');
+            }
         } finally {
             setIsLoading(false);
         }

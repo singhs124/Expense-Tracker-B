@@ -1,91 +1,73 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { navigationTheme } from '../constants/navigationThemes';
-import { getTokens, storeTokens } from '../security/KeyChainStore.js';
+import { useAuth } from '../contexts/AuthContext.js';
 
-import { MainTabs } from './BottomNavigation.jsx';
-
-import { log } from '../logger/logging.js';
 import LoginPhoneScreen from '../screens/LoginPhoneScreen';
 import OTPScreen from '../screens/OTPScreen.jsx';
+import { MainTabs } from './MainScreenTabs.jsx';
 
 const RootStack = createNativeStackNavigator();
 
-
 export default function AppNavigator() {
-
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, isLoading, login } = useAuth();
   const [phoneNumber, setPhoneNumber] = useState('');
 
-  // const isDev = __DEV__;
-  const isDev = false;
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
-  useEffect(() => {
+  const renderAuthScreens = () => (
+    <>
+      <RootStack.Screen name="Login">
+        {(props) => (
+          <LoginPhoneScreen
+            {...props}
+            onContinue={(phone) => {
+              setPhoneNumber(phone);
+              props.navigation.navigate('OTPVerification', { phone });
+            }}
+          />
+        )}
+      </RootStack.Screen>
 
-    const checkAuth = async() => {
-      if (isDev) {
-        log.info("🚀DEV MODE ACTIVATED: Auto Logged In")
-        setIsLoggedIn(true)
-        return;
-      }
-
-      try {
-        const tokens = await getTokens();
-        if(tokens != null){
-          //parse access and refresh token
-          setIsLoggedIn(true)
-        } else {
-          setIsLoggedIn(false);
-        }
-      } catch (error) {
-        log.error("Failed to load token from KeyChain: ", error);
-        setIsLoggedIn(false);
-      }
-    }
-    
-    checkAuth();
-  }, [isDev])
-
-  const handleOTPVerified = async (token) => {
-    // Store token securely (AsyncStorage/SecureStore)
-    // Then mark as logged in
-    await storeTokens(token);
-    setIsLoggedIn(true);
-  };
+      <RootStack.Screen name="OTPVerification">
+        {(props) => (
+          <OTPScreen
+            {...props}
+            phoneNumber={phoneNumber}
+            onVerificationSuccess={(token) => login(token)}
+            onCancel={() => props.navigation.goBack()}
+          />
+        )}
+      </RootStack.Screen>
+    </>
+  );
 
   return (
     <NavigationContainer theme={navigationTheme}>
       <RootStack.Navigator screenOptions={{ headerShown: false }}>
         {!isLoggedIn ? (
-          <>
-            <RootStack.Screen name='Login'>
-              {(props) => (
-                <LoginPhoneScreen
-                  {...props}
-                  onContinue={(phone) => {
-                    setPhoneNumber(phone);
-                    props.navigation.navigate('OTPVerification', { phone })
-                  }}
-                />
-              )}
-            </RootStack.Screen>
-            {/* <RootStack.Screen name="OTPVerification" component={Dummy}/> */}
-            <RootStack.Screen name="OTPVerification">
-              {(props) => (
-                <OTPScreen
-                  {...props}
-                  phoneNumber={phoneNumber}
-                  onVerificationSuccess={handleOTPVerified}
-                  onCancel={() => props.navigation.goBack()}
-                />
-              )}
-            </RootStack.Screen>
-          </>
-        ) : <RootStack.Screen name='MainApp' component={MainTabs} />
-        }
+          renderAuthScreens()
+        ) : (
+          <RootStack.Screen name="MainApp" component={MainTabs} />
+        )}
       </RootStack.Navigator>
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

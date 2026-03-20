@@ -2,10 +2,10 @@ import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View
 
 import { useEffect, useState } from 'react';
 import { Alert, Vibration } from 'react-native';
-import { validateOtp } from '../backend/login';
+import { validateOtp } from '../services/api/login';
 import { OTPInput } from '../components/OtpInput';
 import { useOtp } from '../contexts/OTPContext';
-import { log } from '../logger/logging';
+import { log } from '../utils/logging';
 
 
 

@@ -41,9 +41,10 @@ public class MonthlyExpenseService {
         log.debug("Getting Expenses Grouped by Origin");
         Long userId = authUserUtil.getCurrentUser();
         List<Object[]> expenses =  expenseRepo.getExpenseGroupByBank(userId);
-        if(expenses == null || expenses.isEmpty()){
-            throw new ExpenseNotFoundException("No Data Available to Show!");
-        }
+//        todo: Handle no expense conditions
+//        if(expenses == null || expenses.isEmpty()){
+//            throw new ExpenseNotFoundException("No Data Available to Show!");
+//        }
         return expenses;
     }
 
@@ -55,5 +56,13 @@ public class MonthlyExpenseService {
             throw new ExpenseNotFoundException("No Data Available to Show!");
         }
         return expenses;
+    }
+
+    public Double getTotalExpense(){
+        log.debug("Getting Total Expense");
+        Long userId = authUserUtil.getCurrentUser();
+        Double amount = expenseRepo.getTotalExpense(userId);
+        if(amount == null) return 0.0;
+        return amount;
     }
 }

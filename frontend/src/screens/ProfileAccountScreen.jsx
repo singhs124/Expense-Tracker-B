@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import {
     Alert,
     Dimensions,
@@ -15,29 +15,67 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Avatar from '../components/Avatar';
 import { Color } from '../constants/TWPalette';
+import { useAuth } from '../contexts/AuthContext';
+import { ExpenseContext } from '../contexts/ExpenseContext';
+import { UserContext } from '../contexts/UserContext';
 
 
 const { width } = Dimensions.get('window');
 
-const ProfileScreen = ({ navigation }) => {
-    const [profileData, setProfileData] = useState({
-        name: 'Rahul Kumar',
-        email: 'rahul.kumar@email.com',
-        initials: 'RK',
-    });
+const ProfileScreen = ({navigation}) => {
+    // const [profileData, setProfileData] = useState({
+    //     name: 'Rahul Kumar',
+    //     email: 'rahul.kumar@email.com',
+    //     initials: 'RK',
+    // });
 
-    const [stats] = useState({
-        thisMonth: '₹45,230',
-        transactions: 127,
-        categories: 8,
-    });
+    const {totalExpense, totalExpenseUpdate} = useContext(ExpenseContext);
+    const {user, fetchUserData} = useContext(UserContext);
+    const {logout} = useAuth();
 
+    const profileData = useMemo(()=>({
+        name: user?.name ?? 'Guest',
+        email: user?.email ?? '@good-way',
+        initials: '',
+    }), [user]);
+
+    const [expenses, setExpenses] = useState(0);
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [settingsModalVisible, setSettingsModalVisible] = useState(false);
     const [editName, setEditName] = useState(profileData.name);
     const [editEmail, setEditEmail] = useState(profileData.email);
     const [currency, setCurrency] = useState('INR');
     const [theme, setTheme] = useState('auto');
+
+    const stats = useMemo(()=>({
+        thisMonth: expenses,
+        transactions: 127,
+        categories: 8,
+    }),[expenses])
+
+    
+
+
+    useEffect(()=>{
+        const updateData = async()=>{
+            try{
+                const data = await totalExpenseUpdate();
+                setExpenses(data);
+            } catch(e){
+                console.log(e);
+            }
+        }
+        updateData();
+    },[])
+
+// todo: can this useEffect can be combined with above?
+    useEffect(()=>{
+        fetchUserData();
+    },[]);
+
+    useEffect(()=>{
+        setExpenses(totalExpense);
+    },[totalExpense]);
 
     const handleSaveProfile = () => {
         const initials = editName
@@ -46,12 +84,6 @@ const ProfileScreen = ({ navigation }) => {
             .join('')
             .toUpperCase()
             .slice(0, 2);
-
-        setProfileData({
-            name: editName,
-            email: editEmail,
-            initials: initials,
-        });
 
         setEditModalVisible(false);
         Alert.alert('Success', 'Profile updated successfully!');
@@ -72,13 +104,13 @@ const ProfileScreen = ({ navigation }) => {
             'Are you sure you want to logout?',
             [
                 { text: 'Cancel', style: 'cancel' },
-                { text: 'Logout', onPress: () => navigation.replace('Login') },
+                { text:"Logout", style:"destructive", onPress:()=>logout() },
             ],
             { cancelable: true }
         );
     };
 
-
+//Todo : Making it different Component
     const MenuItem = ({ icon, title, subtitle, color, onPress }) => (
         <TouchableOpacity style={styles.menuItem} onPress={onPress} activeOpacity={0.7}>
             <View style={[styles.menuIcon, { backgroundColor: color }]}>
@@ -206,7 +238,7 @@ const ProfileScreen = ({ navigation }) => {
                             title="Categories"
                             subtitle="Customize expense tags"
                             color="rgba(236, 72, 153, 0.1)"
-                            onPress={() => handleMenuClick('Categories')}
+                            onPress={() => navigation.navigate('Bank')}
                         />
                         <MenuItem
                             icon="download"
@@ -231,8 +263,8 @@ const ProfileScreen = ({ navigation }) => {
                         />
                         <MenuItem
                             icon="info"
-                            title="About Exp3nse"
-                            subtitle="Version 2.0.1"
+                            title="About Expense Tracker"
+                            subtitle="Version 1.0.0"
                             color="rgba(139, 92, 246, 0.1)"
                             onPress={() => handleMenuClick('About')}
                         />

@@ -13,8 +13,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { emailLoginRequest, loginRequest } from '../backend/login';
-import { log } from '../logger/logging';
+import { emailLoginRequest, loginRequest } from '../services/api/login';
+import { log } from '../utils/logging';
 
 const LoginPhoneScreen = ({ onContinue }) => {
   // State management
@@ -98,9 +98,7 @@ const LoginPhoneScreen = ({ onContinue }) => {
         mobileNumber: email,
         reqObject: ''
       }
-      const response = await emailLoginRequest(data);
-      log.info("API Response: ", response.status);
-
+      await emailLoginRequest(data);
       setIsLoading(false);
       onContinue(email);
     } catch (err) {

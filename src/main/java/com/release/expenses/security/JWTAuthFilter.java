@@ -52,6 +52,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
         } catch (Exception ex){
+            log.error("Auth Filter Failes {}", ex.getMessage(), ex);
             handlerExceptionResolver.resolveException(request,response,null,ex);
         }
     }

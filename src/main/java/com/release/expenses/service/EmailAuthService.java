@@ -53,7 +53,7 @@ public class EmailAuthService {
         String salt = SHAHashing.generateSalt(16);
         String email = authObj.mobileNumber().trim();
         String EncryptedEmail = EncryptionUtil.encrypt(authObj.mobileNumber().trim());
-        UserOtp checkIfUserExistAlready  = authRepo.findByPhoneHash(EncryptedEmail);
+        UserOtp checkIfUserExistAlready  = authRepo.findByUserIdentifier(EncryptedEmail);
         if(checkIfUserExistAlready != null){
             log.debug("User ReAttempted to generate OTP");
             String otp = OTPGenerator.generateOtp();
@@ -67,7 +67,7 @@ public class EmailAuthService {
         String otp = OTPGenerator.generateOtp();
         String hashedOtp = SHAHashing.generateSHA256Hash(otp+salt);
         UserOtp userOtp = new UserOtp();
-        userOtp.setPhoneHash(EncryptedEmail);
+        userOtp.setUserIdentifier(EncryptedEmail);
         userOtp.setOtpHash(hashedOtp);
         userOtp.setSalt(salt);
         authRepo.save(userOtp);
@@ -76,9 +76,9 @@ public class EmailAuthService {
     }
 
     public AuthTokenResDTO validateOtp(AuthReqDTO otpObj) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        String EncryptMobileNumber = EncryptionUtil.encrypt(otpObj.mobileNumber());
-        log.debug("EncryptMobileNumber: {}" , EncryptMobileNumber);
-        UserOtp record = authRepo.findByPhoneHash(EncryptMobileNumber);
+        String EncryptedUserIdentifier = EncryptionUtil.encrypt(otpObj.mobileNumber());
+        log.debug("EncryptMobileNumber: {}" , EncryptedUserIdentifier);
+        UserOtp record = authRepo.findByUserIdentifier(EncryptedUserIdentifier);
         if(record == null){
             throw new InvalidOTPException("OTP not Generated, Try Again!");
         }
@@ -90,7 +90,7 @@ public class EmailAuthService {
             throw new InvalidOTPException("Incorrect OTP!");
         }
         //Create or Check for this mobile in Users Table
-        User user = userService.createUser(EncryptMobileNumber);
+        User user = userService.createUser(EncryptedUserIdentifier);
         return generateTokenWithLogin(user);
     }
 

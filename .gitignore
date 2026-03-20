@@ -1,5 +1,6 @@
 HELP.md
 src/main/resources/application-local.properties
+Deployment_README.md
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/

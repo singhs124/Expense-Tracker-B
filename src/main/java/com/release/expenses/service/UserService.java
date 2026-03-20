@@ -27,13 +27,13 @@ public class UserService {
     private final AuthUserUtil authUserUtil;
 
     @Transactional
-    public User createUser(String phoneHash){
-        if(userRepo.existsByPhoneHash(phoneHash)){
+    public User createUser(String userIdentity){
+        if(userRepo.existsByUserIdentity(userIdentity)){
             log.debug("Existing User");
-            return userRepo.findByPhoneHash(phoneHash);
+            return userRepo.findByUserIdentity(userIdentity);
         }
         User user = new User();
-        user.setPhoneHash(phoneHash);
+        user.setUserIdentity(userIdentity);
         return userRepo.save(user);
     }
 
@@ -48,10 +48,12 @@ public class UserService {
         return userRepo.findById(Id);
     }
 
-    public UserResponseDTO getUserDetails() throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public UserResponseDTO getUserDetails() throws InvalidAlgorithmParameterException,
+            NoSuchPaddingException, IllegalBlockSizeException,
+            NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Long userId = authUserUtil.getCurrentUser();
         User user = findUserById(userId).orElseThrow(()-> new UserNotFoundException("User Not Found!"));
-        String phoneNumber = EncryptionUtil.decrypt(user.getPhoneHash());
-        return new UserResponseDTO(user.getName(), null, phoneNumber);
+        String email = EncryptionUtil.decrypt(user.getUserIdentity());
+        return new UserResponseDTO(user.getName(), email, "xxxxx12456");
     }
 }

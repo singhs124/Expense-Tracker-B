@@ -47,7 +47,7 @@ public class MobileAuthService {
         }
         String salt = SHAHashing.generateSalt(16);
         String EncryptedMobileNumberWithCountryCode = EncryptionUtil.encrypt(mobileObj.reqObject()+mobileObj.mobileNumber());
-        UserOtp checkIfUserExistAlready  = authRepo.findByPhoneHash(EncryptedMobileNumberWithCountryCode);
+        UserOtp checkIfUserExistAlready  = authRepo.findByUserIdentifier(EncryptedMobileNumberWithCountryCode);
         if(checkIfUserExistAlready != null){
             log.debug("User ReAttempted to generate OTP");
             String otp = SHAHashing.generateSHA256Hash(OTPGenerator.generateOtp()+salt);
@@ -58,7 +58,7 @@ public class MobileAuthService {
         }
         String otp = SHAHashing.generateSHA256Hash(OTPGenerator.generateOtp()+salt);
         UserOtp userOtp = new UserOtp();
-        userOtp.setPhoneHash(EncryptedMobileNumberWithCountryCode);
+        userOtp.setUserIdentifier(EncryptedMobileNumberWithCountryCode);
         userOtp.setOtpHash(otp);
         userOtp.setSalt(salt);
         authRepo.save(userOtp);
@@ -68,7 +68,7 @@ public class MobileAuthService {
     public AuthTokenResDTO validateOtp(AuthReqDTO otpObj) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         String EncryptMobileNumber = EncryptionUtil.encrypt(otpObj.mobileNumber());
         log.debug("EncryptMobileNumber: {}" , EncryptMobileNumber);
-        UserOtp record = authRepo.findByPhoneHash(EncryptMobileNumber);
+        UserOtp record = authRepo.findByUserIdentifier(EncryptMobileNumber);
         if(record == null){
             throw new InvalidOTPException("OTP not Generated, Try Again!");
         }

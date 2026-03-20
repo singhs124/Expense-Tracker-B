@@ -27,15 +27,15 @@ import SuccessOverlay from '../components/SuccessOverlay';
 import ToggleButton from '../components/ToogleButton';
 
 
-import { addExpense } from '../backend/add';
 import { Color } from '../constants/TWPalette';
-import { log } from '../logger/logging';
+import { addExpense } from '../services/api/add';
+import { log } from '../utils/logging';
 
 
 
 // Main AddExpense Component
 const AddExpense = () => {
-  const {originWiseExpense} = useContext(ExpenseContext);
+  const {originWiseExpense, totalExpenseUpdate} = useContext(ExpenseContext);
   const { isDark } = useTheme();
   const { getBanksList } = useContext(BankContext);
   const { showError } = useError();
@@ -127,6 +127,7 @@ const AddExpense = () => {
 
         try{
           await originWiseExpense();
+          await totalExpenseUpdate();
         } catch(error){
           Alert.alert("Notice", "Expense Added but Charts are not updated!");
           console.log("Chart Not updated during expense Addition: "+ error);

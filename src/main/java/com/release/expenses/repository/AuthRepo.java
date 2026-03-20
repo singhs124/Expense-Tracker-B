@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AuthRepo extends JpaRepository<UserOtp,Long> {
-    UserOtp findByPhoneHash(String phoneHash);
+    UserOtp findByUserIdentifier(String userIdentifier);
 }

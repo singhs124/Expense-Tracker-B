@@ -17,8 +17,8 @@ public class User {
     @Column(name = "user_id", nullable = false)
     private Long Id;
 
-    @Column(name = "mobile_number", nullable = false)
-    private String phoneHash;
+    @Column(name = "user_identity", nullable = false)
+    private String userIdentity;
 
     @Column(name = "user_name")
     private String name;

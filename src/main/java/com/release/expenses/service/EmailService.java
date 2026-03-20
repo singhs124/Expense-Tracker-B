@@ -23,7 +23,7 @@ public class EmailService {
 
     @Value("${mail.sender.email}")
     private String senderEmail;
-
+    //todo: return response to frontend before sending email
     public void sendOtp(String to, String otp) throws MessagingException, UnsupportedEncodingException {
         log.debug("Sending Auth to {} : {}", to, otp);
         MimeMessage message = javaMailSender.createMimeMessage();

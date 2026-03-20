@@ -1,23 +1,29 @@
-import {createContext, useState} from 'react'
+import { createContext, useState } from 'react';
 
-import {expenseGroupedByOrigin} from '../backend/add';
+import { expenseGroupedByOrigin, totalExpenseApi } from '../services/api/add';
 
 export const ExpenseContext = createContext();
 
 export const ExpenseProvider = ({children})=>{
     const [originExpense,setOriginExpense] = useState([]);
+    const [totalExpense, setTotalExpense] = useState(0);
 
     const originWiseExpense = async()=>{
-        const res = await expenseGroupedByOrigin();
-        const data = await res.json();
+        const data = await expenseGroupedByOrigin();
         console.log(data);
         setOriginExpense(data);
-        if(!res.ok) throw new Error(data.message);
+        return data;
+    }
+
+    const totalExpenseUpdate = async()=>{
+        const data = await totalExpenseApi();
+        console.log(data);
+        setTotalExpense(data);
         return data;
     }
 
     return(
-        <ExpenseContext.Provider value={{originExpense, originWiseExpense}}>
+        <ExpenseContext.Provider value={{originExpense, originWiseExpense, totalExpense, totalExpenseUpdate}}>
             {children}
         </ExpenseContext.Provider>
     )

@@ -8,7 +8,7 @@ import { getTabIcon } from '../utils/navigationHelper';
 const CustomTabBar = ({ state, descriptors, navigation }) => {
   let settingsKey;
   state.routes.map((route,index)=>{
-    if(route.name === 'Settings') settingsKey = route.key
+    if(route.name === 'Profile') settingsKey = route.key
   })
   const {options} = descriptors[settingsKey];
   const tabBarStyle = options.tabBarStyle;

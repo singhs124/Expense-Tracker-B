@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name="su_otp_verification" , indexes = {
-        @Index(name = "idx_phone_hash" , columnList = "mobile_number"),
+        @Index(name = "idx_user_identifier" , columnList = "user_identifier"),
         @Index(name = "idx_created_at" , columnList = "created_at")
 })
 public class UserOtp {
@@ -17,8 +17,8 @@ public class UserOtp {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    @Column(name = "mobile_number" , nullable = false)
-    private String phoneHash;
+    @Column(name = "user_identifier" , nullable = false)
+    private String userIdentifier;
 
     @Column(name = "otp" , nullable = false)
     private String otpHash;

@@ -1,15 +1,28 @@
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 
 import PageLayout from '../components/PageLayout';
 import { menuItems } from '../constants/menuItems';
 import { Color } from '../constants/TWPalette';
+import { useAuth } from '../contexts/AuthContext';
 
+//Deprecated
 const ProfileScreen = () => {
     const navigation = useNavigation();
+    const {logout} = useAuth();
+
+    const handleLogoutPress = ()=>{
+        Alert.alert(
+            "Logout",
+            "Are you sure to log out?",
+            [
+                {text: "Cancel", style: "cancel"},
+                {text:"Logout", style:"destructive", onPress:()=>logout()}
+            ]
+        )
+    }
 
     return (
         <PageLayout>
@@ -27,6 +40,9 @@ const ProfileScreen = () => {
                         <Icon name="chevron-right" size={24} color="#bbb" style={styles.menuArrow} />
                     </TouchableOpacity>
                 ))}
+                <TouchableOpacity onPress={handleLogoutPress}>
+                    <Text>Logout</Text>
+                </TouchableOpacity>
             </View>
         </PageLayout>
     );

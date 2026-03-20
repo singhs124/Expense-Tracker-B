@@ -1,5 +1,16 @@
+import { jwtDecode } from 'jwt-decode';
 import * as KeyChain from 'react-native-keychain';
-import { log } from '../logger/logging';
+import { log } from '../../utils/logging';
+
+export const isTokenExpired = (token)=>{
+    try{
+        const decoded = jwtDecode(token);
+        const currentTime = Date.now()/1000;
+        return decoded.exp < currentTime + 10;
+    } catch(error){
+        return true;
+    }
+}
 
 export const storeTokens = async ({access_token,refresh_token})=>{
     const token = JSON.stringify({access_token,refresh_token});
@@ -28,4 +39,8 @@ export const getTokens = async ()=>{
         log.error("Error in getting Stored Tokens", error);
         return null;
     }
+}
+
+export const clearTokens = async()=>{
+    await KeyChain.resetGenericPassword();
 }

@@ -18,7 +18,7 @@ import PageLayout from '../components/PageLayout';
 import { bankIcons } from '../constants/bankIcons';
 import { BankContext } from '../contexts/BankContext';
 import { ExpenseContext } from '../contexts/ExpenseContext';
-import { log } from '../logger/logging';
+import { log } from '../utils/logging';
 
 const BankScreen = () => {
   const { originWiseExpense } = useContext(ExpenseContext);

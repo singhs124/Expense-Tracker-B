@@ -33,4 +33,9 @@ public class MonthlyExpenseController {
     public List<Object[]> getExpenseByMonth(){
         return monthlyExpenseService.getExpenseByMonth();
     }
+
+    @GetMapping("totalExpense")
+    public Double getTotalExpenses(){
+        return monthlyExpenseService.getTotalExpense();
+    }
 }

@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ExpenseNotFoundException.class)
     public ResponseEntity<ErrorMap> handleExpenseNotFoundException(ExpenseNotFoundException ex){
-        return new ResponseEntity<>(new ErrorMap(ex.getMessage(),HttpStatus.SERVICE_UNAVAILABLE),HttpStatus.SERVICE_UNAVAILABLE);
+        return new ResponseEntity<>(new ErrorMap(ex.getMessage(),HttpStatus.NOT_FOUND),HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @ExceptionHandler(DuplicateBankNameException.class)

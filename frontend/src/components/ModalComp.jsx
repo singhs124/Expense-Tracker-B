@@ -9,7 +9,7 @@ import {
     View
 } from 'react-native';
 
-import errorStyles from '../css/errorMessage';
+import errorStyles from '../styles/errorMessage';
 
 export const ModalComp = ({visible, initialValue='', title, buttonTitle, onSubmit, onCancel, error}) => {
     const [bankName, setBankName] = useState(initialValue);

@@ -6,7 +6,7 @@ export const ErrorProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   const showError = (message, type = 'error') => {
-    console.log("Conte")
+    console.log("Content")
     setError({ message, type, visible: true });
   };
 
